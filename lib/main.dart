@@ -1,221 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const FruitApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// Router Configuration
+final GoRouter _router = GoRouter(
+  initialLocation: '/',
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const FruitListScreen();
+      },
+      // Nested routes defined here
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'fruit/:name', // The URL resolves to /fruit/:name
+          builder: (BuildContext context, GoRouterState state) {
+            final String fruitName = state.pathParameters['name']!;
+            return FruitDetailScreen(fruitName: fruitName);
+          },
+        ),
+      ],
+    ),
+  ],
+);
+
+class FruitApp extends StatelessWidget {
+  const FruitApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Wallet UI',
-      theme: ThemeData(primarySwatch: Colors.teal),
-      home: const WalletScreen(),
+    return MaterialApp.router(
+      title: 'Fruit Router Demo',
+      theme: ThemeData(primarySwatch: Colors.green),
+      routerConfig: _router,
     );
   }
 }
 
-class WalletScreen extends StatelessWidget {
-  const WalletScreen({super.key});
+// First Page: List of Fruits at "/"
+class FruitListScreen extends StatelessWidget {
+  const FruitListScreen({super.key});
+
+  final List<String> fruits = const ['Mango', 'Banana', 'Pear', 'Strawberry', 'Pineapple'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F5F9),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(18),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF00897B), Color(0xFF26A69A)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: Column(
-                children: [
-                  const CircleAvatar(
-                    radius: 45,
-                    backgroundImage: AssetImage("assets/images/images.jpg"),
-                  ),
-
-                  const SizedBox(height: 15),
-
-                  const Text(
-                    "Spider Man",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 5),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.account_balance_wallet,
-                        color: Colors.white70,
-                        size: 18,
-                      ),
-                      SizedBox(width: 5),
-                      Text(
-                        "Wallet ID: SPDR-2026",
-                        style: TextStyle(color: Colors.white70),
-                      ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 25),
-
-                  const Text(
-                    "Current Balance",
-                    style: TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  const Text(
-                    "\$0,000.00",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 38,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Overview",
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            Expanded(
-              child: ListView(
-                children: const [
-                  TransactionTile(
-                    icon: Icons.arrow_downward,
-                    iconColor: Colors.green,
-                    title: "Received Money",
-                    date: "August 05, 2026",
-                    amount: "+ \$213.00",
-                  ),
-                  TransactionTile(
-                    icon: Icons.account_balance,
-                    iconColor: Colors.blue,
-                    title: "Salary Deposit",
-                    date: "August 02, 2026",
-                    amount: "+ \$500.00",
-                  ),
-                  TransactionTile(
-                    icon: Icons.shopping_cart,
-                    iconColor: Colors.orange,
-                    title: "Shopping",
-                    date: "July 30, 2026",
-                    amount: "- \$120.00",
-                  ),
-                  TransactionTile(
-                    icon: Icons.fastfood,
-                    iconColor: Colors.red,
-                    title: "Restaurant",
-                    date: "July 28, 2026",
-                    amount: "- \$35.00",
-                  ),
-                  TransactionTile(
-                    icon: Icons.phone_android,
-                    iconColor: Colors.purple,
-                    title: "Mobile Load",
-                    date: "July 26, 2026",
-                    amount: "- \$20.00",
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+      appBar: AppBar(title: const Text('Fruit List')),
+      body: ListView.builder(
+        itemCount: fruits.length,
+        itemBuilder: (context, index) {
+          final fruit = fruits[index];
+          return ListTile(
+            title: Text(fruit),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              // Navigating to the nested route
+              context.go('/fruit/${fruit.toLowerCase()}');
+            },
+          );
+        },
       ),
     );
   }
 }
 
-class TransactionTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String date;
-  final String amount;
+// Second Page: Fruit Illustration at "/fruit/:name"
+class FruitDetailScreen extends StatelessWidget {
+  final String fruitName;
 
-  const TransactionTile({
-    super.key,
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.date,
-    required this.amount,
-  });
+  const FruitDetailScreen({super.key, required this.fruitName});
+
+  // Helper method to provide an "illustration" (emoji) based on the fruit name
+  String _getFruitIllustration(String name) {
+    switch (name.toLowerCase()) {
+      case 'mango': return '🥭';
+      case 'banana': return '🍌';
+      case 'pear': return '🍐';
+      case 'strawberry': return '🍓';
+      case 'pineapple': return '🍍';
+      default: return '❓';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Row(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(fruitName.toUpperCase()),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: iconColor.withOpacity(0.15),
-              child: Icon(icon, color: iconColor),
-            ),
-
-            const SizedBox(width: 15),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(date, style: const TextStyle(color: Colors.grey)),
-                ],
-              ),
-            ),
-
             Text(
-              amount,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: amount.contains("+") ? Colors.green : Colors.red,
-              ),
+              _getFruitIllustration(fruitName),
+              style: const TextStyle(fontSize: 120), // Large size for the illustration
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'This is the illustration for $fruitName',
+              style: const TextStyle(fontSize: 18),
             ),
           ],
         ),
