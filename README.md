@@ -1,17 +1,29 @@
-# flutter_application_1
+# Pokédex
 
-A new Flutter project.
+Midterm exam project for CS Elective 2: Mobile Development with Flutter.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Browse the first 30 Pokémon with artwork and PokéAPI types.
+- Search Pokémon by name, nickname, or Pokédex number.
+- Filter the list by Pokémon type.
+- Set or clear a nickname from a Pokémon card or its details page.
+- Add Pokémon to favorites, see the favorites panel, and remove favorites.
+- Refresh the list with pull-to-refresh or the refresh action.
 
-A few resources to get you started if this is your first Flutter project:
+Riverpod is the app's state-management solution. Pokémon information is loaded
+from [PokéAPI](https://pokeapi.co/); an internet connection is required to load
+the list and artwork.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Run
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```sh
+flutter pub get
+flutter run
+```
+
+## Test
+
+```sh
+flutter test
+```
